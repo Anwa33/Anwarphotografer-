@@ -1,23 +1,10 @@
-# Nikon Tokina Studio APK Release Guide
+# Simple Android WebView project for the Nikon Tokina Studio HTML page.
 
-Project Android ini sudah dipersiapkan untuk build release, tetapi Anda perlu membuat keystore lokal terlebih dahulu agar proses release benar-benar bisa menghasilkan APK yang valid.
+Instructions:
+1. Open the `android` folder in Android Studio.
+2. Let Gradle sync finish.
+3. Build APK with: Build > Build APK(s)
+4. The APK will be generated in:
+   android/app/build/outputs/apk/debug/
 
-Langkah build release:
-1. Buat file `android/keystore.properties` dari contoh:
-   - copy `android/keystore.properties.example` menjadi `android/keystore.properties`
-2. Isi nilai keystore yang valid:
-   - `storeFile=.../release-key.jks`
-   - `storePassword=...`
-   - `keyAlias=...`
-   - `keyPassword=...`
-3. Jalankan perintah berikut di folder `android`:
-   - `./gradlew assembleRelease`
-4. APK release akan dibuat di:
-   - `android/app/build/outputs/apk/release/`
-
-Catatan:
-- `keystore.properties` dan file `.jks` sebaiknya tidak di-commit ke GitHub.
-- Jika Anda tidak ingin membuat keystore, build debug tetap bisa dilakukan dengan:
-  - `./gradlew assembleDebug`
-
-Untuk menghasilakan APK dengan nama yang lebih rapi, Anda juga bisa menambahkan `applicationId` dan `versionName` sesuai branding final app Anda.
+This version is intentionally minimal so you can later convert the HTML page into an APK more easily.
