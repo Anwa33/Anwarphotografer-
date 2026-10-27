@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix Nikon D3400 + Tokina 11-16mm: 1000 Tone Preset \u0026 Darkroom Studio",
+  "description": "Studio preset profesional lengkap 1,000 tone untuk Nikon D3400 & Tokina 11-16mm f/2.8 dengan dukungan input semua jenis file foto (JPG, PNG, TIFF, HEIC, RAW Nikon NEF, DNG, BMP), seleksi subjek & latar belakang AI, koreksi lensa ultra-wide Tokina, dan ekspor kualitas ultra (Lossless PNG, 100% JPEG, XMP, 3D LUT).",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
