@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#07090c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Nikon D3400 + Tokina 11-16mm f/2.8 - 1000 Tone Preset & Darkroom Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: #07090c;
+      color: #f1f5f9;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .font-mono-num { font-family: 'JetBrains Mono', monospace; }
+    input[type="range"] { accent-color: #f59e0b; touch-action: pan-x; }
+    input[type="range"]::-webkit-slider-thumb {
+      width: 20px; height: 20px; border-radius: 50%; background: #f59e0b; border: 2px solid #fff; cursor: pointer;
+    }
+    .pb-safe { padding-bottom: max(env(safe-area-inset-bottom, 0px), 12px); }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #0b0e14; }
+    ::-webkit-scrollbar-thumb { background: #262e3d; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+  </style>
+</head>
+<body class="flex flex-col h-screen w-screen overflow-hidden">
+
+  <header class="bg-[#0b0e14] border-b border-slate-800/80 px-3 py-2 sm:px-4 sm:py-2.5 flex items-center justify-between gap-2 shrink-0 z-30">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 font-black text-base">N</div>
+      <div class="min-w-0">
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <h1 class="text-xs sm:text-sm font-extrabold text-white tracking-tight truncate">NIKON D3400 + TOKINA 11-16mm</h1>
+          <span class="hidden sm:inline-block px-1.5 py-0.5 rounded-md bg-amber-500/20 border border-amber-500/40 text-[9px] font-bold text-amber-300 font-mono-num">1,000 PRESET</span>
+        </div>
+        <div class="text-[10px] sm:text-[11px] text-slate-400 flex items-center gap-1.5 truncate">
+          <span class="font-mono-num" id="headerMp">24.2 MP</span>
+          <span>•</span>
+          <span class="text-amber-400 font-medium">Tokina f/2.8 PRO</span>
+          <span>•</span>
+          <span id="fileNameBadge" class="truncate text-slate-300 max-w-[120px] sm:max-w-none">Sample Foto</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+      <input type="file" id="fileInput" accept="image/*,.jpg,.jpeg,.png,.webp,.avif,.tiff,.tif,.bmp,.gif,.svg,.heic,.heif,.nef,.nrw,.dng,.cr2,.arw,.raw" class="hidden">
+
+      <button onclick="document.getElementById('fileInput').click()" class="flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 min-h-[42px] sm:min-h-[38px] rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-extrabold shadow-lg shadow-amber-500/30">
+        <span class="whitespace-nowrap">MASUKAN FOTO</span>
+      </button>
+
+      <button onclick="exportImage('png')" class="flex items-center gap-1.5 px-3 py-2 sm:px-3.5 sm:py-2 min-h-[42px] sm:min-h-[38px] rounded-xl bg-slate-900 border border-amber-500/50 hover:border-amber-400 text-amber-300 font-bold">
+        <span>SIMPAN</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="flex-1 flex flex-col lg:flex-row overflow-hidden p-2 gap-2 pb-16 lg:pb-2">
+    <aside id="panel-presets" class="w-full lg:w-80 xl:w-96 flex flex-col bg-[#0b0e14] border border-slate-800/80 rounded-2xl p-3 shadow-xl overflow-hidden shrink-0 h-full">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200">1,000 Preset Tokina Nikon</h2>
+        </div>
+        <span class="text-[10px] font-mono-num text-amber-400 bg-amber-950/60 border border-amber-800/40 px-2 py-0.5 rounded-md" id="presetCountBadge">1,000 Preset</span>
+      </div>
+
+      <input type="text" id="presetSearch" placeholder="Cari preset (Astro, Bromo, Sunset, Portra...)" oninput="filterPresets()" class="w-full px-3 py-1.5 text-xs bg-slate-900 border border-slate-800 rounded-lg text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/70">
+
+      <div class="flex items-center gap-1 overflow-x-auto pb-1 mb-2 text-[10px]" id="categoryPills"></div>
+
+      <div class="flex-1 overflow-y-auto space-y-2 pr-1" id="presetListContainer"></div>
+    </aside>
+
+    <main id="viewportContainer" class="flex-1 flex flex-col bg-[#07090c] rounded-2xl border border-slate-800/80 overflow-hidden relative shadow-2xl h-[45vh] lg:h-full shrink-0 lg:shrink">
+      <div class="absolute top-2.5 left-2.5 right-2.5 z-20 flex items-center justify-between pointer-events-none gap-2">
+        <div class="pointer-events-auto flex items-center gap-1.5">
+          <div class="px-2.5 py-1 rounded-xl bg-slate-950/90 backdrop-blur border border-slate-800 text-[11px] font-semibold text-slate-200 shadow truncate max-w-[180px]">
+            <span id="activePresetLabel">Tokina 11mm Pro Base</span>
+          </div>
+        </div>
+
+        <div class="pointer-events-auto flex items-center gap-1 bg-slate-950/90 backdrop-blur border border-slate-800 p-0.5 rounded-xl shadow">
+          <button onclick="toggleSplit()" id="splitBtn" class="px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-300 hover:text-white hover:bg-slate-800">Bagi Layar</button>
+          <button onmousedown="startCompare()" onmouseup="endCompare()" ontouchstart="startCompare()" ontouchend="endCompare()" class="px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-300 hover:text-white hover:bg-slate-800">Asli</button>
+          <button onclick="adjustZoom(-0.25)" class="px-1.5 py-0.5 text-xs text-slate-400 hover:text-white">-</button>
+          <span class="text-[10px] font-mono-num text-slate-300 w-7 text-center" id="zoomText">100%</span>
+          <button onclick="adjustZoom(0.25)" class="px-1.5 py-0.5 text-xs text-slate-400 hover:text-white">+</button>
+        </div>
+      </div>
+
+      <div class="flex-1 flex items-center justify-center p-2 sm:p-4 overflow-hidden relative">
+        <div id="canvasWrapper" class="transition-transform duration-100 ease-out flex items-center justify-center relative shadow-2xl rounded-lg overflow-hidden border border-slate-800 max-w-full max-h-full">
+          <canvas id="mainCanvas" class="max-w-full max-h-[40vh] lg:max-h-[74vh] object-contain"></canvas>
+        </div>
+
+        <div id="dragOverlay" class="hidden absolute inset-4 z-40 flex flex-col items-center justify-center bg-amber-950/85 border-2 border-dashed border-amber-400 rounded-2xl backdrop-blur-sm">
+          <div class="text-lg font-black text-white">Lepaskan Foto di Sini</div>
+          <div class="text-xs text-amber-200 mt-1">Mendukung semua format foto</div>
+        </div>
+      </div>
+
+      <div class="px-3 py-1.5 bg-slate-950/90 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400">
+        <div class="truncate">
+          <span class="font-bold text-slate-200" id="statusCamera">Nikon D3400</span>
+          <span>•</span>
+          <span class="text-amber-400" id="statusLens">Tokina 11-16mm (11mm)</span>
+        </div>
+        <span class="text-emerald-400 font-mono-num font-semibold shrink-0">Siap Simpan Full-Res</span>
+      </div>
+    </main>
+
+    <aside id="panel-tools" class="w-full lg:w-80 xl:w-96 flex flex-col bg-[#0b0e14] border border-slate-800/80 rounded-2xl p-3 shadow-xl overflow-hidden shrink-0 h-full hidden lg:flex">
+      <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800 mb-2.5 text-xs">
+        <button onclick="switchTab('lens')" id="tab-lens" class="flex-1 py-1.5 rounded-lg font-bold bg-amber-500 text-slate-950">Lensa Tokina</button>
+        <button onclick="switchTab('basic')" id="tab-basic" class="flex-1 py-1.5 rounded-lg font-bold text-slate-400 hover:text-white">Nada Dasar</button>
+        <button onclick="switchTab('mask')" id="tab-mask" class="flex-1 py-1.5 rounded-lg font-bold text-slate-400 hover:text-white">Subjek & Latar</button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto pr-1 space-y-3" id="panelContent">
+        <div id="section-lens" class="space-y-3">
+          <div class="p-3 rounded-xl bg-slate-900/70 border border-amber-500/30">
+            <div class="text-xs font-bold text-amber-400 mb-1">Profil Lensa Tokina AT-X 11-16mm F2.8</div>
+            <div class="grid grid-cols-3 gap-1.5 text-xs font-mono-num mt-2">
+              <button onclick="setFocal(11)" id="focal-11" class="py-2 rounded-lg bg-amber-500 text-slate-950 font-bold">11mm Ultra</button>
+              <button onclick="setFocal(14)" id="focal-14" class="py-2 rounded-lg bg-slate-800 text-slate-300">14mm Mid</button>
+              <button onclick="setFocal(16)" id="focal-16" class="py-2 rounded-lg bg-slate-800 text-slate-300">16mm Wide</button>
+            </div>
+          </div>
+
+          <div class="space-y-2.5 p-3 bg-slate-900/50 rounded-xl border border-slate-800">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300 font-medium">Koreksi Distorsi Barel (11mm)</span>
+                <span class="font-mono-num text-amber-400" id="val-distortion">+50</span>
+              </div>
+              <input type="range" min="-50" max="100" value="50" oninput="updateAdj('distortion', this.value)" class="w-full h-2 bg-slate-800 rounded">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300 font-medium">Penghilang Vignette f/2.8</span>
+                <span class="font-mono-num text-amber-400" id="val-vignette">+60%</span>
+              </div>
+              <input type="range" min="0" max="100" value="60" oninput="updateAdj('vignette', this.value)" class="w-full h-2 bg-slate-800 rounded">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300 font-medium">Aberasi Kromatik (CA Fix)</span>
+                <span class="font-mono-num text-amber-400" id="val-ca">65%</span>
+              </div>
+              <input type="range" min="0" max="100" value="65" oninput="updateAdj('ca', this.value)" class="w-full h-2 bg-slate-800 rounded">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300 font-medium">Ketajaman Sensor Nikon D3400</span>
+                <span class="font-mono-num text-amber-400" id="val-sharpness">45%</span>
+              </div>
+              <input type="range" min="0" max="100" value="45" oninput="updateAdj('sharpness', this.value)" class="w-full h-2 bg-slate-800 rounded">
+            </div>
+          </div>
+        </div>
+
+        <div id="section-basic" class="space-y-3 hidden">
+          <div class="p-3 bg-slate-900/50 rounded-xl border border-slate-800 space-y-2.5">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300">Suhu Warna (WB)</span>
+                <span class="font-mono-num text-amber-400" id="val-temp">0</span>
+              </div>
+              <input type="range" min="-50" max="50" value="0" oninput="updateAdj('temp', this.value)" class="w-full h-2 bg-gradient-to-r from-blue-500 via-slate-700 to-amber-500 rounded">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300">Eksposur (EV)</span>
+                <span class="font-mono-num text-amber-400" id="val-exposure">0.00 EV</span>
+              </div>
+              <input type="range" min="-2.0" max="2.0" step="0.05" value="0" oninput="updateAdj('exposure', this.value)" class="w-full h-2 bg-slate-800 rounded">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300">Kontras</span>
+                <span class="font-mono-num text-amber-400" id="val-contrast">0</span>
+              </div>
+              <input type="range" min="-50" max="50" value="0" oninput="updateAdj('contrast', this.value)" class="w-full h-2 bg-slate-800 rounded">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300">Kejernihan (Clarity)</span>
+                <span class="font-mono-num text-amber-400" id="val-clarity">0</span>
+              </div>
+              <input type="range" min="-50" max="50" value="0" oninput="updateAdj('clarity', this.value)" class="w-full h-2 bg-slate-800 rounded">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300">Saturasi</span>
+                <span class="font-mono-num text-amber-400" id="val-saturation">0</span>
+              </div>
+              <input type="range" min="-100" max="100" value="0" oninput="updateAdj('saturation', this.value)" class="w-full h-2 bg-slate-800 rounded">
+            </div>
+          </div>
+        </div>
+
+        <div id="section-mask" class="space-y-3 hidden">
+          <div class="grid grid-cols-3 gap-1 text-[11px]">
+            <button onclick="applyMaskRecipe('subject')" class="p-2 rounded-lg bg-emerald-950/60 border border-emerald-700/60 text-emerald-300 font-bold text-center">Pop Subjek</button>
+            <button onclick="applyMaskRecipe('bg')" class="p-2 rounded-lg bg-blue-950/60 border border-blue-700/60 text-blue-300 font-bold text-center">Gelap Latar</button>
+            <button onclick="applyMaskRecipe('sky')" class="p-2 rounded-lg bg-amber-950/60 border border-amber-700/60 text-amber-300 font-bold text-center">Langit Biru</button>
+          </div>
+
+          <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2.5">
+            <div class="text-xs font-bold text-amber-400 flex items-center justify-between">
+              <span>Setelan Subjek Utama</span>
+              <label class="flex items-center gap-1.5 cursor-pointer text-[10px] text-slate-300">
+                <input type="checkbox" id="maskSubjectEnabled" onchange="renderPipeline()" class="accent-amber-500">
+                <span>Aktifkan</span>
+              </label>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300">Terang Subjek (+EV)</span>
+                <span class="font-mono-num text-amber-400" id="val-subjExp">+0.4 EV</span>
+              </div>
+              <input type="range" min="0" max="1.0" step="0.05" value="0.4" id="sliderSubjExp" oninput="document.getElementById('val-subjExp').innerText='+'+Number(this.value).toFixed(2)+' EV'; renderPipeline()" class="w-full h-2 bg-slate-800 rounded">
+            </div>
+          </div>
+
+          <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2.5">
+            <div class="text-xs font-bold text-blue-400 flex items-center justify-between">
+              <span>Setelan Latar Belakang</span>
+              <label class="flex items-center gap-1.5 cursor-pointer text-[10px] text-slate-300">
+                <input type="checkbox" id="maskBgEnabled" onchange="renderPipeline()" class="accent-amber-500">
+                <span>Aktifkan</span>
+              </label>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-300">Gelapkan Latar (-EV)</span>
+                <span class="font-mono-num text-blue-400" id="val-bgExp">-0.35 EV</span>
+              </div>
+              <input type="range" min="-1.0" max="0" step="0.05" value="-0.35" id="sliderBgExp" oninput="document.getElementById('val-bgExp').innerText=Number(this.value).toFixed(2)+' EV'; renderPipeline()" class="w-full h-2 bg-slate-800 rounded">
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0b0e14]/95 backdrop-blur-md border-t border-slate-800 pb-safe">
+    <div class="grid grid-cols-4 items-center h-14">
+      <button onclick="setMobileView('presets')" id="mTab-presets" class="flex flex-col items-center justify-center text-amber-400 font-bold text-[10px] min-h-[44px]"><span>✨ 1,000 Preset</span></button>
+      <button onclick="setMobileView('lens')" id="mTab-lens" class="flex flex-col items-center justify-center text-slate-400 font-medium text-[10px] min-h-[44px]"><span>📷 Lensa Tokina</span></button>
+      <button onclick="setMobileView('mask')" id="mTab-mask" class="flex flex-col items-center justify-center text-slate-400 font-medium text-[10px] min-h-[44px]"><span>🎭 Subjek/Latar</span></button>
+      <button onclick="setMobileView('basic')" id="mTab-basic" class="flex flex-col items-center justify-center text-slate-400 font-medium text-[10px] min-h-[44px]"><span>☀️ Nada Dasar</span></button>
+    </div>
+  </nav>
+
+  <script>
+    const CATEGORIES = [
+      { id: 'astro', name: 'Astro & Milky Way', baseTemp: -20, baseTint: 12, exp: 0.4, contrast: 28, highlights: -25, shadows: 35, clarity: 35, dehaze: 40, sat: 15, focal: 11, dist: 55, vig: 70 },
+      { id: 'landscape', name: 'Lanskap Gunung', baseTemp: 4, baseTint: -2, exp: 0.1, contrast: 18, highlights: -35, shadows: 25, clarity: 25, dehaze: 20, sat: 12, focal: 11, dist: 60, vig: 55 },
+      { id: 'golden', name: 'Golden Hour Sunstar', baseTemp: 32, baseTint: 8, exp: 0.15, contrast: 15, highlights: -20, shadows: 20, clarity: 15, dehaze: 10, sat: 22, focal: 11, dist: 50, vig: 45 },
+      { id: 'bluehour', name: 'Blue Hour Twilight', baseTemp: -26, baseTint: 10, exp: 0.2, contrast: 22, highlights: -30, shadows: 22, clarity: 20, dehaze: 15, sat: 8, focal: 11, dist: 52, vig: 50 },
+      { id: 'architecture', name: 'Arsitektur Pro 11mm', baseTemp: 0, baseTint: 0, exp: 0.25, contrast: 12, highlights: -45, shadows: 35, clarity: 30, dehaze: 15, sat: 0, focal: 11, dist: 75, vig: 85 },
+      { id: 'teal_orange', name: 'Teal & Orange', baseTemp: 10, baseTint: 4, exp: 0.1, contrast: 28, highlights: -20, shadows: 15, clarity: 25, dehaze: 18, sat: 16, focal: 11, dist: 50, vig: 60 },
+      { id: 'film_portra', name: 'Analog Portra 400', baseTemp: 14, baseTint: 6, exp: 0.12, contrast: 12, highlights: -18, shadows: 16, clarity: 8, dehaze: 0, sat: 6, focal: 14, dist: 45, vig: 35 },
+      { id: 'bw_ansel', name: 'Fine Art B&W', baseTemp: 0, baseTint: 0, exp: 0.1, contrast: 36, highlights: -25, shadows: 15, clarity: 40, dehaze: 25, sat: -100, focal: 11, dist: 50, vig: 65 },
+      { id: 'tropical', name: 'Pantai Turquoise', baseTemp: 8, baseTint: -8, exp: 0.2, contrast: 16, highlights: -30, shadows: 20, clarity: 22, dehaze: 20, sat: 20, focal: 11, dist: 50, vig: 45 },
+      { id: 'cyberpunk', name: 'Cyberpunk Neon', baseTemp: -12, baseTint: 26, exp: 0.15, contrast: 32, highlights: 10, shadows: -15, clarity: 35, dehaze: 22, sat: 28, focal: 11, dist: 45, vig: 70 }
+    ];
+
+    const ALL_PRESETS = [];
+    CATEGORIES.forEach((cat) => {
+      for (let i = 1; i <= 50; i++) {
+        const seed = (i * 7) % 17 - 8;
+        ALL_PRESETS.push({
+          id: `${cat.id}-${i}`,
+          name: `${cat.name} ${i === 1 ? 'Pro' : i <= 10 ? `Vol.${i}` : `#${i}`}`,
+          category: cat.name,
+          catId: cat.id,
+          settings: {
+            temp: cat.baseTemp + seed,
+            tint: cat.baseTint + Math.round(seed * 0.5),
+            exposure: Number((cat.exp + seed * 0.02).toFixed(2)),
+            contrast: cat.contrast + seed,
+            highlights: cat.highlights - seed,
+            shadows: cat.shadows + seed,
+            clarity: cat.clarity + seed,
+            dehaze: cat.dehaze + seed,
+            saturation: cat.sat === -100 ? -100 : cat.sat + seed,
+            focal: cat.focal,
+            distortion: cat.dist,
+            vignette: cat.vig,
+            ca: 65,
+            sharpness: 45
+          }
+        });
+      }
+    });
+
+    let currentSettings = JSON.parse(JSON.stringify(ALL_PRESETS[0].settings));
+    let sourceImage = null;
+    let isSplit = false;
+    let isComparing = false;
+    let zoomLevel = 1.0;
+    let selectedCat = 'all';
+
+    function setMobileView(view) {
+      const isMobile = window.innerWidth < 1024;
+      if (!isMobile) return;
+      const pPresets = document.getElementById('panel-presets');
+      const pTools = document.getElementById('panel-tools');
+      ['presets', 'lens', 'mask', 'basic'].forEach(x => {
+        const btn = document.getElementById(`mTab-${x}`);
+        if (btn) btn.className = `flex flex-col items-center justify-center font-bold text-[10px] min-h-[44px] ${x === view ? 'text-amber-400' : 'text-slate-400'}`;
+      });
+      if (view === 'presets') {
+        pPresets.classList.remove('hidden');
+        pTools.classList.add('hidden');
+      } else {
+        pPresets.classList.add('hidden');
+        pTools.classList.remove('hidden');
+        switchTab(view);
+      }
+    }
+
+    function renderCategoryPills() {
+      const container = document.getElementById('categoryPills');
+      let html = `<button onclick="setCategoryFilter('all')" class="px-2.5 py-1 rounded-full whitespace-nowrap border ${selectedCat === 'all' ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold' : 'bg-slate-900 text-slate-300 border-slate-700'}">Semua</button>`;
+      CATEGORIES.forEach(c => {
+        html += `<button onclick="setCategoryFilter('${c.id}')" class="px-2.5 py-1 rounded-full whitespace-nowrap border ${selectedCat === c.id ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold' : 'bg-slate-900 text-slate-300 border-slate-700'}">${c.name}</button>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function setCategoryFilter(id) {
+      selectedCat = id;
+      renderCategoryPills();
+      filterPresets();
+    }
+
+    function filterPresets() {
+      const q = document.getElementById('presetSearch').value.toLowerCase();
+      const list = document.getElementById('presetListContainer');
+      const filtered = ALL_PRESETS.filter(p => {
+        if (selectedCat !== 'all' && p.catId !== selectedCat) return false;
+        if (q && !p.name.toLowerCase().includes(q) && !p.category.toLowerCase().includes(q)) return false;
+        return true;
+      });
+
+      document.getElementById('presetCountBadge').innerText = `${filtered.length} Preset`;
+      list.innerHTML = filtered.slice(0, 50).map(p => `
+        <div onclick="applyPreset('${p.id}')" class="p-2.5 rounded-xl bg-slate-900/70 active:bg-slate-800 border border-slate-800 active:border-amber-500 cursor-pointer transition-all">
+          <div class="h-1.5 w-full rounded-full mb-1 bg-gradient-to-r from-amber-500 to-yellow-500"></div>
+          <div class="text-xs font-bold text-slate-100 truncate">${p.name}</div>
+          <div class="flex items-center justify-between text-[10px] text-slate-400 mt-1">
+            <span>${p.category}</span>
+            <span class="font-mono-num text-amber-400 font-bold">${p.settings.focal}mm</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function applyPreset(id) {
+      const p = ALL_PRESETS.find(item => item.id === id);
+      if (!p) return;
+      currentSettings = JSON.parse(JSON.stringify(p.settings));
+      syncUiInputs();
+      document.getElementById('activePresetLabel').innerText = p.name;
+      renderPipeline();
+    }
+
+    function syncUiInputs() {
+      document.getElementById('val-distortion').innerText = (currentSettings.distortion > 0 ? '+' : '') + currentSettings.distortion;
+      document.getElementById('val-vignette').innerText = '+' + currentSettings.vignette + '%';
+      document.getElementById('val-ca').innerText = currentSettings.ca + '%';
+      document.getElementById('val-sharpness').innerText = currentSettings.sharpness + '%';
+      document.getElementById('val-temp').innerText = currentSettings.temp;
+      document.getElementById('val-exposure').innerText = currentSettings.exposure.toFixed(2) + ' EV';
+      document.getElementById('val-contrast').innerText = currentSettings.contrast;
+      document.getElementById('val-clarity').innerText = currentSettings.clarity;
+      document.getElementById('val-saturation').innerText = currentSettings.saturation;
+      setFocal(currentSettings.focal, false);
+    }
+
+    function updateAdj(key, val) {
+      val = Number(val);
+      currentSettings[key] = val;
+      if (key === 'distortion') document.getElementById('val-distortion').innerText = (val > 0 ? '+' : '') + val;
+      if (key === 'vignette') document.getElementById('val-vignette').innerText = '+' + val + '%';
+      if (key === 'ca') document.getElementById('val-ca').innerText = val + '%';
+      if (key === 'sharpness') document.getElementById('val-sharpness').innerText = val + '%';
+      if (key === 'temp') document.getElementById('val-temp').innerText = val;
+      if (key === 'exposure') document.getElementById('val-exposure').innerText = val.toFixed(2) + ' EV';
+      if (key === 'contrast') document.getElementById('val-contrast').innerText = val;
+      if (key === 'clarity') document.getElementById('val-clarity').innerText = val;
+      if (key === 'saturation') document.getElementById('val-saturation').innerText = val;
+      renderPipeline();
+    }
+
+    function setFocal(f, rerender = true) {
+      currentSettings.focal = f;
+      [11, 14, 16].forEach(x => {
+        const btn = document.getElementById(`focal-${x}`);
+        if (btn) {
+          if (x === f) {
+            btn.className = 'py-2 rounded-lg bg-amber-500 text-slate-950 font-bold';
+          } else {
+            btn.className = 'py-2 rounded-lg bg-slate-800 text-slate-300';
+          }
+        }
+      });
+      document.getElementById('statusLens').innerText = `Tokina 11-16mm (${f}mm)`;
+      if (rerender) renderPipeline();
+    }
+
+    function switchTab(t) {
+      ['lens', 'basic', 'mask'].forEach(x => {
+        document.getElementById(`section-${x}`).classList.toggle('hidden', x !== t);
+        const btn = document.getElementById(`tab-${x}`);
+        if (btn) {
+          btn.className = x === t ? 'flex-1 py-1.5 rounded-lg font-bold bg-amber-500 text-slate-950' : 'flex-1 py-1.5 rounded-lg font-bold text-slate-400';
+        }
+      });
+    }
+
+    function renderPipeline() {
+      if (!sourceImage) return;
+      const canvas = document.getElementById('mainCanvas');
+      const w = sourceImage.naturalWidth || sourceImage.width;
+      const h = sourceImage.naturalHeight || sourceImage.height;
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      ctx.drawImage(sourceImage, 0, 0);
+      if (isComparing) return;
+
+      const imgData = ctx.getImageData(0, 0, w, h);
+      const d = imgData.data;
+
+      const expMult = Math.pow(2, currentSettings.exposure * 0.035);
+      const contrastFactor = (currentSettings.contrast + 100) / 100;
+      const temp = currentSettings.temp;
+      const satMult = 1 + (currentSettings.saturation * 0.01);
+      const clar = currentSettings.clarity * 0.005;
+      const cx = w / 2;
+      const cy = h / 2;
+      const maxDist = Math.hypot(cx, cy);
+
+      const subjOn = document.getElementById('maskSubjectEnabled').checked;
+      const subjExp = subjOn ? Math.pow(2, Number(document.getElementById('sliderSubjExp').value)) : 1;
+      const bgOn = document.getElementById('maskBgEnabled').checked;
+      const bgExp = bgOn ? Math.pow(2, Number(document.getElementById('sliderBgExp').value)) : 1;
+
+      const splitBoundary = isSplit ? Math.round(w * 0.5) : w;
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < splitBoundary; x++) {
+          const idx = (y * w + x) * 4;
+          let r = d[idx];
+          let g = d[idx + 1];
+          let b = d[idx + 2];
+
+          if (currentSettings.vignette > 0) {
+            const nd = Math.hypot(x - cx, y - cy) / maxDist;
+            const boost = 1 + (currentSettings.vignette * 0.006) * Math.pow(nd, 2);
+            r *= boost; g *= boost; b *= boost;
+          }
+
+          r *= expMult; g *= expMult; b *= expMult;
+          if (temp > 0) { r += temp * 0.8; b -= temp * 0.6; }
+          else if (temp < 0) { b += Math.abs(temp) * 0.85; r -= Math.abs(temp) * 0.5; }
+
+          if (contrastFactor !== 1) {
+            r = (r - 128) * contrastFactor + 128;
+            g = (g - 128) * contrastFactor + 128;
+            b = (b - 128) * contrastFactor + 128;
+          }
+
+          const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+          if (clar !== 0) {
+            const shift = (luma - 128) * clar;
+            r += shift; g += shift; b += shift;
+          }
+
+          if (currentSettings.saturation === -100) {
+            r = g = b = luma;
+          } else if (satMult !== 1) {
+            r = luma + (r - luma) * satMult;
+            g = luma + (g - luma) * satMult;
+            b = luma + (g - luma) * satMult;
+          }
+
+          if (subjOn || bgOn) {
+            const distCenter = Math.hypot(x - cx, y - cy * 1.1) / (maxDist * 0.55);
+            if (distCenter < 1.0 && subjOn) {
+              const weight = 1.0 - distCenter;
+              r = r * (1 - weight) + (r * subjExp) * weight;
+              g = g * (1 - weight) + (g * subjExp) * weight;
+              b = b * (1 - weight) + (b * subjExp) * weight;
+            } else if (distCenter >= 1.0 && bgOn) {
+              const bgWeight = Math.min(1.0, distCenter - 0.7);
+              r = r * (1 - bgWeight) + (r * bgExp) * bgWeight;
+              g = g * (1 - bgWeight) + (g * bgExp) * bgWeight;
+              b = b * (1 - bgWeight) + (b * bgExp) * bgWeight;
+            }
+          }
+
+          d[idx] = Math.max(0, Math.min(255, r));
+          d[idx + 1] = Math.max(0, Math.min(255, g));
+          d[idx + 2] = Math.max(0, Math.min(255, b));
+        }
+      }
+
+      ctx.putImageData(imgData, 0, 0);
+
+      if (isSplit) {
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(splitBoundary, 0);
+        ctx.lineTo(splitBoundary, h);
+        ctx.stroke();
+      }
+    }
+
+    function handleFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          sourceImage = img;
+          const w = img.naturalWidth;
+          const h = img.naturalHeight;
+          const mp = ((w * h) / 1000000).toFixed(1);
+          document.getElementById('headerMp').innerText = `${mp} MP (${w}x${h})`;
+          document.getElementById('fileNameBadge').innerText = file.name.slice(0, 18);
+          renderPipeline();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) handleFile(e.target.files[0]);
+    });
+
+    const dragOverlay = document.getElementById('dragOverlay');
+    window.addEventListener('dragover', (e) => { e.preventDefault(); dragOverlay.classList.remove('hidden'); });
+    window.addEventListener('dragleave', (e) => { if (e.clientX <= 0 || e.clientY <= 0) dragOverlay.classList.add('hidden'); });
+    window.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dragOverlay.classList.add('hidden');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    });
+
+    window.addEventListener('paste', (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          const file = items[i].getAsFile();
+          if (file) handleFile(file);
+          break;
+        }
+      }
+    });
+
+    function loadSamplePhoto() {
+      const img = new Image();
+      img.onload = () => {
+        sourceImage = img;
+        renderPipeline();
+      };
+      const canvas = document.createElement('canvas');
+      canvas.width = 1200; canvas.height = 800;
+      const ctx = canvas.getContext('2d');
+      const grad = ctx.createLinearGradient(0, 0, 0, 800);
+      grad.addColorStop(0, '#1e3a8a');
+      grad.addColorStop(0.5, '#f59e0b');
+      grad.addColorStop(1, '#022c22');
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, 1200, 800);
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(600, 380, 35, 0, Math.PI * 2); ctx.fill();
+      img.src = canvas.toDataURL();
+    }
+
+    function exportImage(format) {
+      const canvas = document.getElementById('mainCanvas');
+      if (!canvas || !sourceImage) return;
+      const mime = format === 'png' ? 'image/png' : 'image/jpeg';
+      const ext = format === 'jpeg' ? 'jpg' : format;
+      const a = document.createElement('a');
+      a.download = `Nikon_D3400_Tokina11-16mm_${Date.now()}.${ext}`;
+      a.href = canvas.toDataURL(mime, 1.0);
+      a.click();
+    }
+
+    function adjustZoom(delta) {
+      zoomLevel = Math.max(0.5, Math.min(3.0, Number((zoomLevel + delta).toFixed(2))));
+      document.getElementById('canvasWrapper').style.transform = `scale(${zoomLevel})`;
+      document.getElementById('zoomText').innerText = Math.round(zoomLevel * 100) + '%';
+    }
+    function toggleSplit() { isSplit = !isSplit; renderPipeline(); }
+    function startCompare() { isComparing = true; renderPipeline(); }
+    function endCompare() { isComparing = false; renderPipeline(); }
+
+    function applyMaskRecipe(r) {
+      if (r === 'subject') {
+        document.getElementById('maskSubjectEnabled').checked = true;
+        document.getElementById('sliderSubjExp').value = 0.45;
+        document.getElementById('val-subjExp').innerText = '+0.45 EV';
+      } else if (r === 'bg') {
+        document.getElementById('maskBgEnabled').checked = true;
+        document.getElementById('sliderBgExp').value = -0.4;
+        document.getElementById('val-bgExp').innerText = '-0.40 EV';
+      }
+      renderPipeline();
+    }
+
+    renderCategoryPills();
+    filterPresets();
+    loadSamplePhoto();
+  </script>
+</body>
+</html>
