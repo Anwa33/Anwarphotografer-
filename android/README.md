@@ -1,14 +1,21 @@
-# Nikon Tokina Studio
+## Android project improvements
 
-Project Android untuk halaman `public/nikon_d3400_tokina_studio.html` dibuat sebagai WebView app.
+Yang sudah ditingkatkan:
+- splash screen otomatis saat app dibuka
+- ikon adaptive launcher untuk Android modern
+- tema gelap konsisten dengan desain studio
+- file chooser yang lebih aman untuk upload foto
+- dukungan multi-select file upload dasar
+- lifecycle WebView yang lebih stabil
 
-Cara build:
+Langkah berikutnya yang paling realistis di environment ini adalah:
 1. Buka folder `android` di Android Studio.
-2. Tunggu Gradle sync selesai.
-3. Pilih `Build > Build Bundle(s) / APK(s) > Build APK(s)`.
-4. Hasil APK akan muncul di `android/app/build/outputs/apk/debug/`.
+2. Jalankan `Sync Project with Gradle Files`.
+3. Build APK via menu `Build > Build APK(s)`.
 
-Catatan:
-- Aplikasi memuat file HTML dari `android/app/src/main/assets/nikon_d3400_tokina_studio.html`.
-- Fitur upload foto pada halaman dijalankan dengan Android file chooser.
-- Untuk generate APK release dibutuhkan keystore dan signing config.
+Jika Anda mau, saya bisa lanjut ke tahap berikutnya:
+- membuat versi release signing
+- menambahkan splash screen yang lebih premium
+- menambahkan tombol native untuk fitur save/share
+- membuat app icon custom berbasis logo Nikon/Tokina
+- menyiapkan `gradlew` untuk build lewat terminal

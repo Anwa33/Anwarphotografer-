@@ -1,7 +1,7 @@
 package com.anwa33.nikontokinastudio
 
-import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.webkit.ValueCallback
@@ -19,13 +19,21 @@ class MainActivity : AppCompatActivity() {
 
     private val filePickerLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val clipData = result.data?.clipData
             val uri = result.data?.data
-            val uris = if (uri != null) arrayOf(uri) else arrayOf()
+            val uris = when {
+                clipData != null && clipData.itemCount > 0 -> Array(clipData.itemCount) { i ->
+                    clipData.getItemAt(i).uri
+                }
+                uri != null -> arrayOf(uri)
+                else -> emptyArray()
+            }
             fileChooserCallback?.onReceiveValue(uris)
             fileChooserCallback = null
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_NikonTokinaStudio)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -41,12 +49,17 @@ class MainActivity : AppCompatActivity() {
         settings.databaseEnabled = true
         settings.allowFileAccess = true
         settings.allowContentAccess = true
+        settings.allowUniversalAccessFromFileURLs = true
         settings.cacheMode = WebSettings.LOAD_DEFAULT
         settings.setSupportZoom(true)
         settings.builtInZoomControls = true
         settings.displayZoomControls = false
-        settings.allowUniversalAccessFromFileURLs = true
-        settings.mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+        settings.javaScriptCanOpenWindowsAutomatically = true
+        settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+        settings.loadWithOverviewMode = true
+        settings.useWideViewPort = true
+        settings.setSupportMultipleWindows(true)
+        webView.setBackgroundColor(Color.BLACK)
 
         webView.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
@@ -58,21 +71,30 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = "image/*"
+                    putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
                 }
-                try {
+                return try {
                     filePickerLauncher.launch(intent)
-                    return true
-                } catch (e: Exception) {
-                    return false
+                    true
+                } catch (_: Exception) {
+                    false
                 }
             }
         }
 
         webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, request: android.webkit.WebResourceRequest?): Boolean {
-                return false
-            }
+            override fun shouldOverrideUrlLoading(view: WebView?, request: android.webkit.WebResourceRequest?): Boolean = false
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        webView.onResume()
+    }
+
+    override fun onPause() {
+        webView.onPause()
+        super.onPause()
     }
 
     override fun onBackPressed() {
